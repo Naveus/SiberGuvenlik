@@ -590,37 +590,61 @@ del /f /q "%~f0"
             self.log(f"Aktif uygulama kapatma hatasi: {e}")
 
     def _hide_screen(self):
-        """Ekranı gizle - siyah fullscreen overlay"""
+        """Ekranı gizle - siyah fullscreen overlay (ctypes ile)"""
         if sys.platform != 'win32':
             return
             
         try:
-            # Tkinter ile siyah fullscreen pencere
-            import tkinter as tk
+            # Win32 API ile fullscreen siyah pencere
+            import ctypes
+            from ctypes import wintypes
             
-            if hasattr(self, 'overlay_window') and self.overlay_window:
+            if hasattr(self, 'overlay_hwnd') and self.overlay_hwnd:
                 return  # Zaten açık
-                
-            self.overlay_window = tk.Tk()
-            self.overlay_window.attributes('-fullscreen', True)
-            self.overlay_window.attributes('-topmost', True)
-            self.overlay_window.configure(bg='black')
-            self.overlay_window.overrideredirect(True)
             
-            # Tüm tuş ve fare olaylarını engelle
-            self.overlay_window.bind('<Key>', lambda e: 'break')
-            self.overlay_window.bind('<Button>', lambda e: 'break')
-            self.overlay_window.bind('<Motion>', lambda e: 'break')
+            # Pencere sınıfı oluştur
+            WNDPROC = ctypes.WINFUNCTYPE(ctypes.c_long, wintypes.HWND, wintypes.UINT, wintypes.WPARAM, wintypes.LPARAM)
             
-            # Ayrı thread'de mainloop çalıştır
-            def run_overlay():
-                try:
-                    self.overlay_window.mainloop()
-                except:
-                    pass
+            def wnd_proc(hwnd, msg, wparam, lparam):
+                if msg == 0x0010:  # WM_CLOSE
+                    return 0  # Kapatmayı engelle
+                return ctypes.windll.user32.DefWindowProcW(hwnd, msg, wparam, lparam)
             
-            self.overlay_thread = threading.Thread(target=run_overlay, daemon=True)
-            self.overlay_thread.start()
+            self._wnd_proc = WNDPROC(wnd_proc)
+            
+            # Ekran boyutları
+            screen_w = ctypes.windll.user32.GetSystemMetrics(0)
+            screen_h = ctypes.windll.user32.GetSystemMetrics(1)
+            
+            # Basit siyah pencere oluştur (subprocess ile)
+            import subprocess
+            
+            # PowerShell ile siyah fullscreen form oluştur
+            ps_script = '''
+Add-Type -AssemblyName System.Windows.Forms
+$form = New-Object System.Windows.Forms.Form
+$form.BackColor = [System.Drawing.Color]::Black
+$form.FormBorderStyle = 'None'
+$form.WindowState = 'Maximized'
+$form.TopMost = $true
+$form.ShowInTaskbar = $false
+$form.Show()
+while($form.Visible) { 
+    [System.Windows.Forms.Application]::DoEvents()
+    Start-Sleep -Milliseconds 100
+}
+'''
+            # Script'i dosyaya yaz
+            import tempfile
+            script_path = os.path.join(tempfile.gettempdir(), 'overlay.ps1')
+            with open(script_path, 'w') as f:
+                f.write(ps_script)
+            
+            # PowerShell'i arka planda çalıştır
+            self.overlay_process = subprocess.Popen(
+                ['powershell', '-ExecutionPolicy', 'Bypass', '-File', script_path],
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
             self.log("Ekran gizlendi")
             
         except Exception as e:
@@ -629,9 +653,9 @@ del /f /q "%~f0"
     def _show_screen(self):
         """Ekranı göster - overlay'i kapat"""
         try:
-            if hasattr(self, 'overlay_window') and self.overlay_window:
-                self.overlay_window.destroy()
-                self.overlay_window = None
+            if hasattr(self, 'overlay_process') and self.overlay_process:
+                self.overlay_process.terminate()
+                self.overlay_process = None
                 self.log("Ekran gosterildi")
         except Exception as e:
             self.log(f"Ekran gosterme hatasi: {e}")
