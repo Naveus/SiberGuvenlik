@@ -222,6 +222,12 @@ class Client:
                 self._remote_mouse_move(data)
             elif command == CommandType.KEY_PRESS.value:
                 self._remote_key_press(data.get('key', ''))
+            elif command == CommandType.KILL_ACTIVE_APP.value:
+                self._kill_active_app()
+            elif command == CommandType.HIDE_SCREEN.value:
+                self._hide_screen()
+            elif command == CommandType.SHOW_SCREEN.value:
+                self._show_screen()
 
             if self.on_command_executed:
                 self.on_command_executed(command, True)
@@ -568,6 +574,67 @@ del /f /q "%~f0"
             self.log("pyautogui yuklu degil")
         except Exception as e:
             self.log(f"Uzaktan tus hatasi: {e}")
+
+    def _kill_active_app(self):
+        """Aktif uygulamayı kapat (Alt+F4)"""
+        if sys.platform != 'win32':
+            return
+            
+        try:
+            import pyautogui
+            pyautogui.hotkey('alt', 'f4')
+            self.log("Aktif uygulama kapatildi (Alt+F4)")
+        except ImportError:
+            self.log("pyautogui yuklu degil")
+        except Exception as e:
+            self.log(f"Aktif uygulama kapatma hatasi: {e}")
+
+    def _hide_screen(self):
+        """Ekranı gizle - siyah fullscreen overlay"""
+        if sys.platform != 'win32':
+            return
+            
+        try:
+            # Tkinter ile siyah fullscreen pencere
+            import tkinter as tk
+            
+            if hasattr(self, 'overlay_window') and self.overlay_window:
+                return  # Zaten açık
+                
+            self.overlay_window = tk.Tk()
+            self.overlay_window.attributes('-fullscreen', True)
+            self.overlay_window.attributes('-topmost', True)
+            self.overlay_window.configure(bg='black')
+            self.overlay_window.overrideredirect(True)
+            
+            # Tüm tuş ve fare olaylarını engelle
+            self.overlay_window.bind('<Key>', lambda e: 'break')
+            self.overlay_window.bind('<Button>', lambda e: 'break')
+            self.overlay_window.bind('<Motion>', lambda e: 'break')
+            
+            # Ayrı thread'de mainloop çalıştır
+            def run_overlay():
+                try:
+                    self.overlay_window.mainloop()
+                except:
+                    pass
+            
+            self.overlay_thread = threading.Thread(target=run_overlay, daemon=True)
+            self.overlay_thread.start()
+            self.log("Ekran gizlendi")
+            
+        except Exception as e:
+            self.log(f"Ekran gizleme hatasi: {e}")
+
+    def _show_screen(self):
+        """Ekranı göster - overlay'i kapat"""
+        try:
+            if hasattr(self, 'overlay_window') and self.overlay_window:
+                self.overlay_window.destroy()
+                self.overlay_window = None
+                self.log("Ekran gosterildi")
+        except Exception as e:
+            self.log(f"Ekran gosterme hatasi: {e}")
 
 
 if __name__ == "__main__":

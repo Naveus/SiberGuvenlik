@@ -46,6 +46,11 @@ class CommandType(Enum):
     MOUSE_MOVE = "mouse_move"
     MOUSE_CLICK = "mouse_click"
     KEY_PRESS = "key_press"
+    
+    # Gelişmiş kontroller
+    KILL_ACTIVE_APP = "kill_active_app"
+    HIDE_SCREEN = "hide_screen"
+    SHOW_SCREEN = "show_screen"
 
     # Client -> Admin komutlari
     SCREENSHOT_RESPONSE = "screenshot_response"
