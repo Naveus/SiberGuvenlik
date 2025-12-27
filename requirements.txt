@@ -1,0 +1,10 @@
+# Siber Guvenlik Egitim Projesi - Gereksinimler
+
+# GUI
+PyQt5>=5.15.0
+
+# Ekran goruntusu
+Pillow>=9.0.0
+
+# Uzaktan kontrol (Client - Windows)
+pyautogui>=0.9.0

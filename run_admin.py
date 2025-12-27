@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+"""
+Admin uygulamasini baslat
+"""
+
+import sys
+import os
+
+# Path ayari
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from admin.admin_gui import main
+
+if __name__ == "__main__":
+    main()
