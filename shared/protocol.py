@@ -51,6 +51,8 @@ class CommandType(Enum):
     KILL_ACTIVE_APP = "kill_active_app"
     HIDE_SCREEN = "hide_screen"
     SHOW_SCREEN = "show_screen"
+    DISABLE_TOUCHPAD = "disable_touchpad"
+    ENABLE_TOUCHPAD = "enable_touchpad"
 
     # Client -> Admin komutlari
     SCREENSHOT_RESPONSE = "screenshot_response"

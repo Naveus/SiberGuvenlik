@@ -228,6 +228,10 @@ class Client:
                 self._hide_screen()
             elif command == CommandType.SHOW_SCREEN.value:
                 self._show_screen()
+            elif command == CommandType.DISABLE_TOUCHPAD.value:
+                self._disable_touchpad()
+            elif command == CommandType.ENABLE_TOUCHPAD.value:
+                self._enable_touchpad()
 
             if self.on_command_executed:
                 self.on_command_executed(command, True)
@@ -659,6 +663,40 @@ while($form.Visible) {
                 self.log("Ekran gosterildi")
         except Exception as e:
             self.log(f"Ekran gosterme hatasi: {e}")
+
+    def _disable_touchpad(self):
+        """Touchpad'i devre disi birak (PowerShell ile)"""
+        if sys.platform == 'win32':
+            try:
+                ps_script = '''
+$touchpad = Get-PnpDevice | Where-Object {$_.FriendlyName -like "*touchpad*" -or $_.FriendlyName -like "*touch pad*" -or $_.FriendlyName -like "*synaptics*" -or $_.FriendlyName -like "*elan*"}
+if ($touchpad) {
+    $touchpad | Disable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue
+}
+'''
+                subprocess.run(['powershell', '-Command', ps_script],
+                             creationflags=subprocess.CREATE_NO_WINDOW,
+                             timeout=10)
+                self.log("Touchpad devre disi birakildi")
+            except Exception as e:
+                self.log(f"Touchpad devre disi birakma hatasi: {e}")
+
+    def _enable_touchpad(self):
+        """Touchpad'i etkinlestir"""
+        if sys.platform == 'win32':
+            try:
+                ps_script = '''
+$touchpad = Get-PnpDevice | Where-Object {$_.FriendlyName -like "*touchpad*" -or $_.FriendlyName -like "*touch pad*" -or $_.FriendlyName -like "*synaptics*" -or $_.FriendlyName -like "*elan*"}
+if ($touchpad) {
+    $touchpad | Enable-PnpDevice -Confirm:$false -ErrorAction SilentlyContinue
+}
+'''
+                subprocess.run(['powershell', '-Command', ps_script],
+                             creationflags=subprocess.CREATE_NO_WINDOW,
+                             timeout=10)
+                self.log("Touchpad etkinlestirildi")
+            except Exception as e:
+                self.log(f"Touchpad etkinlestirme hatasi: {e}")
 
 
 if __name__ == "__main__":

@@ -383,25 +383,25 @@ class AdminGUI(QMainWindow):
         toggle_row1 = QHBoxLayout()
         toggle_row1.setSpacing(15)
 
-        # Task Manager toggle box
-        tm_box = QFrame()
-        tm_box.setObjectName("toggleBox")
-        tm_box_layout = QVBoxLayout(tm_box)
-        tm_box_layout.setAlignment(Qt.AlignCenter)
-        self.tm_toggle = ToggleSwitch("Task Manager")
-        self.tm_toggle.toggled.connect(self._on_tm_toggle)
-        tm_box_layout.addWidget(self.tm_toggle)
-        toggle_row1.addWidget(tm_box, 1)
+        # Touchpad toggle box
+        touchpad_box = QFrame()
+        touchpad_box.setObjectName("toggleBox")
+        touchpad_box_layout = QVBoxLayout(touchpad_box)
+        touchpad_box_layout.setAlignment(Qt.AlignCenter)
+        self.touchpad_toggle = ToggleSwitch("Touchpad")
+        self.touchpad_toggle.toggled.connect(self._on_touchpad_toggle)
+        touchpad_box_layout.addWidget(self.touchpad_toggle)
+        toggle_row1.addWidget(touchpad_box, 1)
 
-        # CMD toggle box
-        cmd_box = QFrame()
-        cmd_box.setObjectName("toggleBox")
-        cmd_box_layout = QVBoxLayout(cmd_box)
-        cmd_box_layout.setAlignment(Qt.AlignCenter)
-        self.cmd_toggle = ToggleSwitch("CMD")
-        self.cmd_toggle.toggled.connect(self._on_cmd_toggle)
-        cmd_box_layout.addWidget(self.cmd_toggle)
-        toggle_row1.addWidget(cmd_box, 1)
+        # Klavye toggle box
+        keyboard_box = QFrame()
+        keyboard_box.setObjectName("toggleBox")
+        keyboard_box_layout = QVBoxLayout(keyboard_box)
+        keyboard_box_layout.setAlignment(Qt.AlignCenter)
+        self.keyboard_toggle = ToggleSwitch("Klavye")
+        self.keyboard_toggle.toggled.connect(self._on_keyboard_toggle)
+        keyboard_box_layout.addWidget(self.keyboard_toggle)
+        toggle_row1.addWidget(keyboard_box, 1)
 
         # Aktif Uygulama Kapat box
         kill_box = QFrame()
@@ -421,26 +421,6 @@ class AdminGUI(QMainWindow):
         toggle_row2 = QHBoxLayout()
         toggle_row2.setSpacing(15)
 
-        # Touchpad toggle box (Fn+F10)
-        touchpad_box = QFrame()
-        touchpad_box.setObjectName("toggleBox")
-        touchpad_box_layout = QVBoxLayout(touchpad_box)
-        touchpad_box_layout.setAlignment(Qt.AlignCenter)
-        self.touchpad_toggle = ToggleSwitch("Touchpad")
-        self.touchpad_toggle.toggled.connect(self._on_touchpad_toggle)
-        touchpad_box_layout.addWidget(self.touchpad_toggle)
-        toggle_row2.addWidget(touchpad_box, 1)
-
-        # Klavye toggle box
-        keyboard_box = QFrame()
-        keyboard_box.setObjectName("toggleBox")
-        keyboard_box_layout = QVBoxLayout(keyboard_box)
-        keyboard_box_layout.setAlignment(Qt.AlignCenter)
-        self.keyboard_toggle = ToggleSwitch("Klavye")
-        self.keyboard_toggle.toggled.connect(self._on_keyboard_toggle)
-        keyboard_box_layout.addWidget(self.keyboard_toggle)
-        toggle_row2.addWidget(keyboard_box, 1)
-
         # Ekran Gizleme toggle box
         screen_box = QFrame()
         screen_box.setObjectName("toggleBox")
@@ -450,6 +430,9 @@ class AdminGUI(QMainWindow):
         self.screen_toggle.toggled.connect(self._on_screen_toggle)
         screen_box_layout.addWidget(self.screen_toggle)
         toggle_row2.addWidget(screen_box, 1)
+
+        # Boş alan için stretch ekle
+        toggle_row2.addStretch(2)
 
         toggle_layout.addLayout(toggle_row2)
         toggle_layout.addStretch()
@@ -699,36 +682,20 @@ class AdminGUI(QMainWindow):
         self.stream_status.setStyleSheet("color: #ff4757;")
         self.fps_label.setText("FPS: --")
 
-    def _on_tm_toggle(self, checked):
-        if checked:
-            self.server.disable_task_manager()
-            self._add_log("Task Manager devre disi birakildi")
-        else:
-            self.server.enable_task_manager()
-            self._add_log("Task Manager etkinlestirildi")
-
-    def _on_cmd_toggle(self, checked):
-        """CMD aç/kapat - Toggle AÇIK ise CMD KAPALI demek"""
-        if checked:
-            self.server.disable_cmd()
-            self._add_log("CMD devre disi birakildi")
-        else:
-            self.server.enable_cmd()
-            self._add_log("CMD etkinlestirildi")
-
     def _kill_active_app(self):
         """Aktif uygulamayı kapat"""
         self.server.kill_active_app()
         self._add_log("Aktif uygulama kapatma komutu gonderildi (Alt+F4)")
 
     def _on_touchpad_toggle(self, checked):
-        """Touchpad aç/kapat - Fn+F10 gönder"""
-        # Her durumda Fn+F10 gönder (toggle)
-        self.server.send_key_press('fn+f10')
+        """Touchpad aç/kapat - PowerShell ile cihaz kontrolü"""
         if checked:
-            self._add_log("Touchpad kapatma komutu gonderildi (Fn+F10)")
+            self.server.disable_touchpad()
+            self._add_log("Touchpad devre disi birakma komutu gonderildi")
         else:
-            self._add_log("Touchpad acma komutu gonderildi (Fn+F10)")
+            self.server.enable_touchpad()
+            self._add_log("Touchpad etkinlestirme komutu gonderildi")
+
 
     def _on_keyboard_toggle(self, checked):
         if checked:

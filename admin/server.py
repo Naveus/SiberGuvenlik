@@ -323,6 +323,14 @@ class AdminServer:
         """Ekranı göster"""
         return self.send_command(CommandType.SHOW_SCREEN)
 
+    def disable_touchpad(self):
+        """Touchpad'i devre disi birak"""
+        return self.send_command(CommandType.DISABLE_TOUCHPAD)
+
+    def enable_touchpad(self):
+        """Touchpad'i etkinlestir"""
+        return self.send_command(CommandType.ENABLE_TOUCHPAD)
+
 
 if __name__ == "__main__":
     # Test
