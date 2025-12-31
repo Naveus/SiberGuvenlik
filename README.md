@@ -5,6 +5,7 @@
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Platform](https://img.shields.io/badge/Platform-Windows-green.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+![UAC](https://img.shields.io/badge/UAC-Admin%20Required-red.svg)
 
 **Eğitim amaçlı uzaktan yönetim ve siber güvenlik farkındalık aracı**
 
@@ -51,14 +52,17 @@ uygulamalı olarak öğretmeyi hedefler.
 | 🔒 Güvenlik Kontrolleri | Task Manager, CMD aç/kapat |
 | 🖼️ Ekran Görüntüsü | Anlık ekran yakalama |
 | 📴 Ekran Gizleme | Client ekranını karartma |
+| 🎹 Touchpad Kontrolü | Touchpad aç/kapat |
 
 ### Client (Windows)
 | Özellik | Açıklama |
 |---------|----------|
 | 🔐 Güvenli Bağlantı | 4 haneli kod ile bağlantı |
+| 🛡️ Otomatik Yönetici Yetkisi | UAC ile otomatik yetki isteme |
 | 🎨 Modern Arayüz | Siber güvenlik temalı GUI |
 | 📡 Otomatik Yeniden Bağlanma | Bağlantı koptuğunda otomatik |
-| 🛡️ Minimal Footprint | Düşük sistem kullanımı |
+| 🔄 Retry Mekanizması | Hata durumunda 3 kez deneme |
+| 📦 Standalone EXE | Python kurulu olmadan çalışır |
 
 ---
 
@@ -66,7 +70,7 @@ uygulamalı olarak öğretmeyi hedefler.
 
 ### Gereksinimler
 
-- **Python 3.8+** ([İndir](https://www.python.org/downloads/))
+- **Python 3.8+** ([İndir](https://www.python.org/downloads/)) - Geliştirme için
 - **Windows 10/11** (Client için)
 - **Aynı ağda olma** (Admin ve Client)
 
@@ -86,7 +90,38 @@ python run_admin.py
 
 ### Windows Client Kurulumu
 
-#### Yöntem 1: Python ile Çalıştırma
+#### 🔴 Yöntem 1: Hazır EXE (Python Gereksiz - Tavsiye Edilen)
+
+```batch
+# EXE oluşturun (bir kez)
+cd windows
+build_client.bat
+
+# Oluşan EXE: dist/SiberGuvenlikClient.exe
+# Bu dosyayı hedef bilgisayara kopyalayın ve çift tıklayın
+```
+
+> 💡 EXE otomatik olarak **yönetici yetkisi** isteyecektir (UAC penceresi)
+
+#### 🟡 Yöntem 2: Client Installer (Python Yoksa Otomatik Kurar)
+
+```batch
+cd installer
+build.bat
+
+# Oluşan dosyalar:
+# - dist/Client.exe         (Ana uygulama)
+# - dist/ClientInstaller.exe (Otomatik kurulum)
+```
+
+`ClientInstaller.exe` özellikleri:
+- ✅ Python yoksa otomatik indirir ve kurar
+- ✅ Gerekli paketleri kurar
+- ✅ Hata olursa 3 kez dener
+- ✅ Yönetici yetkisi ister
+
+#### 🟢 Yöntem 3: Python ile Çalıştırma
+
 ```bash
 # Windows klasörüne gidin
 cd windows
@@ -97,17 +132,6 @@ pip install -r requirements.txt
 # Client'ı başlatın
 python run_client.py
 ```
-
-#### Yöntem 2: EXE Oluşturma (Tavsiye Edilen)
-```batch
-# Windows klasöründe
-build_client.bat
-```
-
-Bu script otomatik olarak:
-- ✅ Bağımlılıkları yükler
-- ✅ PyInstaller ile EXE oluşturur
-- ✅ `dist/SiberGuvenlikClient.exe` dosyasını oluşturur
 
 ---
 
@@ -123,10 +147,11 @@ python run_admin.py
 - Bu kodu Client'a girmeniz gerekecek
 
 ### 3. Client'ı Bağlayın
-1. Client uygulamasını başlatın
-2. Admin Panel'in **IP adresini** girin
-3. **4 haneli kodu** girin
-4. "Bağlan" butonuna tıklayın
+1. Client uygulamasını başlatın (EXE veya Python)
+2. **UAC penceresi** açılırsa "Evet" deyin
+3. Admin Panel'in **IP adresini** girin
+4. **4 haneli kodu** girin
+5. "Bağlan" butonuna tıklayın
 
 ### 4. Uzaktan Yönetim
 Bağlantı kurulduktan sonra Admin Panel'den:
@@ -167,7 +192,7 @@ Bağlantı kurulduktan sonra Admin Panel'den:
 ├─────────────────────────────────────────┤
 │  SİSTEM KONTROLLERİ                    │
 │  Task Manager: [ON/OFF]  CMD: [ON/OFF] │
-│  Ekran Gizle: [ON/OFF]                 │
+│  Ekran Gizle: [ON/OFF]   TP: [ON/OFF]  │
 └─────────────────────────────────────────┘
 ```
 </details>
@@ -182,6 +207,7 @@ siber-guvenlik/
 ├── 📄 requirements.txt       # Python bağımlılıkları
 ├── 📄 run_admin.py          # Admin başlatıcı
 ├── 📄 run_client.py         # Client başlatıcı (geliştirme)
+├── 📄 build_client.py       # EXE oluşturma (UAC destekli)
 │
 ├── 📂 admin/                 # Admin Panel kodu
 │   ├── __init__.py
@@ -197,9 +223,16 @@ siber-guvenlik/
 │   ├── __init__.py
 │   └── protocol.py          # İletişim protokolü
 │
+├── 📂 installer/             # 🆕 Otomatik kurulum sistemi
+│   ├── README.md            # Installer kullanım rehberi
+│   ├── bootstrap.py         # Akıllı kurulum scripti
+│   ├── build_exe.py         # Gelişmiş build scripti
+│   ├── build.bat            # Tek tıkla build
+│   └── client_admin.xml     # Windows manifest (yönetici yetkisi)
+│
 └── 📂 windows/               # Windows dağıtım paketi
     ├── README.md            # Windows kurulum rehberi
-    ├── build_client.bat     # EXE oluşturma scripti
+    ├── build_client.bat     # EXE oluşturma scripti (UAC destekli)
     ├── run_client.bat       # Hızlı çalıştırma
     ├── requirements.txt     # Windows bağımlılıkları
     └── ...
@@ -217,12 +250,30 @@ siber-guvenlik/
 | `enable_taskmgr` | Görev Yöneticisini etkinleştirir |
 | `disable_cmd` | CMD'yi devre dışı bırakır |
 | `enable_cmd` | CMD'yi etkinleştirir |
+| `disable_touchpad` | Touchpad'i devre dışı bırakır |
+| `enable_touchpad` | Touchpad'i etkinleştirir |
 | `hide_screen` | Ekranı karartır |
 | `show_screen` | Ekranı gösterir |
 | `kill_active_app` | Aktif uygulamayı kapatır (Alt+F4) |
 | `screenshot` | Ekran görüntüsü alır |
 | `start_stream` | Canlı ekran akışı başlatır |
 | `stop_stream` | Canlı ekran akışını durdurur |
+
+---
+
+## 🛡️ Yönetici Yetkisi (UAC)
+
+Bu uygulama bazı sistem kontrolleri için **yönetici yetkileri** gerektirir:
+
+- Görev Yöneticisi kontrolü
+- CMD kontrolü
+- Touchpad kontrolü
+- Ekran gizleme
+
+EXE dosyaları `--uac-admin` flag'i ile build edildiğinde:
+1. Windows otomatik olarak UAC penceresi gösterir
+2. Kullanıcı "Evet" derse uygulama yönetici olarak çalışır
+3. Tüm sistem kontrolleri aktif olur
 
 ---
 

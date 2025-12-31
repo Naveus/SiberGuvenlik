@@ -9,40 +9,82 @@ Bu belge, Siber Güvenlik Eğitim Projesi'nin Windows Client bileşeninin kurulu
 | Gereksinim | Minimum | Tavsiye |
 |------------|---------|---------|
 | **İşletim Sistemi** | Windows 10 | Windows 11 |
-| **Python** | 3.8 | 3.11+ |
+| **Python** | 3.8 (EXE için gerekli değil) | 3.11+ |
 | **RAM** | 2 GB | 4 GB |
 | **Ağ** | LAN bağlantısı | Aynı subnet |
 
 ---
 
-## 🚀 Hızlı Kurulum
+## 🚀 Kurulum Yöntemleri
 
-### Yöntem 1: EXE Oluşturma (Tavsiye Edilen)
+### 🔴 Yöntem 1: Hazır EXE Kullanma (En Kolay)
 
-1. **Python 3.8+ Yükleyin**
-   - [Python İndir](https://www.python.org/downloads/)
-   - Kurulum sırasında **"Add Python to PATH"** seçeneğini işaretleyin
+Python kurulu olmayan bilgisayarlarda direkt çalışır!
 
-2. **EXE Oluşturun**
-   ```batch
-   build_client.bat
-   ```
-   Bu dosyaya çift tıklayın. Script otomatik olarak:
-   - ✅ Bağımlılıkları yükler (PyQt5, Pillow, pyautogui)
-   - ✅ PyInstaller ile derler
-   - ✅ `dist/SiberGuvenlikClient.exe` oluşturur
+1. `dist/SiberGuvenlikClient.exe` dosyasını hedef bilgisayara kopyalayın
+2. EXE'ye çift tıklayın
+3. **UAC penceresi** açılacak → "Evet" deyin
+4. IP ve kodu girin, bağlanın
 
-3. **Kullanın**
-   - `dist/SiberGuvenlikClient.exe` dosyasını hedef bilgisayara kopyalayın
-   - EXE'yi çalıştırın
+> ⚠️ EXE dosyası yoksa önce build yapmanız gerekir (Yöntem 3)
 
-### Yöntem 2: Python ile Doğrudan Çalıştırma
+---
 
+### 🟡 Yöntem 2: Client Installer (Python Yoksa)
+
+Python kurulu olmayan bilgisayarlar için otomatik kurulum:
+
+1. `installer/ClientInstaller.exe` dosyasını çalıştırın
+2. Otomatik olarak:
+   - ✅ Yönetici yetkisi ister
+   - ✅ Python yoksa indirir ve kurar
+   - ✅ Gerekli paketleri kurar
+   - ✅ Hata olursa 3 kez dener
+   - ✅ Client'ı başlatır
+
+> 💡 İnternet bağlantısı gereklidir (ilk kurulum için)
+
+---
+
+### 🟢 Yöntem 3: EXE Oluşturma (Geliştirici)
+
+Kendi EXE dosyanızı oluşturmak için:
+
+#### Hızlı Yol (Çift Tıkla)
 ```batch
-# Bağımlılıkları yükleyin
+build_client.bat
+```
+
+#### Manuel Yol
+```batch
+# Bağımlılıkları yükle
 pip install -r requirements.txt
 
-# Client'ı başlatın
+# EXE oluştur
+pyinstaller --onefile --windowed --uac-admin --name "SiberGuvenlikClient" run_client.py
+```
+
+#### Gelişmiş Build (Installer dahil)
+```batch
+cd ..\installer
+python build_exe.py --all
+```
+
+Bu komut iki EXE oluşturur:
+- `dist/Client.exe` - Ana uygulama
+- `dist/ClientInstaller.exe` - Otomatik kurulum
+
+---
+
+### 🔵 Yöntem 4: Python ile Doğrudan Çalıştırma
+
+Geliştirme amaçlı:
+
+```batch
+# Bağımlılıkları yükle
+pip install -r requirements.txt
+
+# Client'ı başlat
 python run_client.py
 ```
 
@@ -77,6 +119,7 @@ Bağlantı kurulduktan sonra Admin Panel aşağıdaki kontrollere sahip olur:
 | ⬛ Task Manager | Görev Yöneticisini aç/kapat |
 | ⬛ CMD | Komut İstemi'ni aç/kapat |
 | 📴 Ekran Gizle | Ekranı karartır |
+| 🎹 Touchpad | Touchpad'i aç/kapat |
 | ❌ Aktif Uygulamayı Kapat | Alt+F4 gönderir |
 | 🖼️ Ekran Görüntüsü | Anlık görüntü alır |
 | 📺 Canlı Akış | Ekranı gerçek zamanlı izler |
@@ -86,6 +129,8 @@ Bağlantı kurulduktan sonra Admin Panel aşağıdaki kontrollere sahip olur:
 
 ## ✨ Özellikler
 
+- 🛡️ **Otomatik Yönetici Yetkisi** - UAC penceresi ile
+- 🔄 **Retry Mekanizması** - Hata olursa 3 kez dener
 - 🎨 **Modern Siber Tema** - Mavi-mor gradient tasarım
 - 🔒 **Güvenli Bağlantı** - 4 haneli doğrulama kodu
 - 💬 **Çift Yönlü Mesajlaşma** - Admin ile iletişim
@@ -93,6 +138,7 @@ Bağlantı kurulduktan sonra Admin Panel aşağıdaki kontrollere sahip olur:
 - 🖱️ **Uzaktan Kontrol** - Fare ve klavye desteği
 - 📴 **Ekran Gizleme** - Fullscreen siyah overlay
 - ⚡ **Düşük Kaynak Kullanımı** - Minimal sistem etkisi
+- 📦 **Standalone EXE** - Python kurulu olmadan çalışır
 
 ---
 
@@ -102,7 +148,7 @@ Bağlantı kurulduktan sonra Admin Panel aşağıdaki kontrollere sahip olur:
 windows/
 ├── 📄 README.md            # Bu dosya
 ├── 📄 requirements.txt     # Python bağımlılıkları
-├── 📄 build_client.bat     # EXE oluşturma scripti
+├── 📄 build_client.bat     # EXE oluşturma scripti (UAC destekli)
 ├── 📄 run_client.bat       # Hızlı çalıştırma (Python gerekli)
 ├── 📄 run_client.py        # Ana giriş noktası
 │
@@ -114,6 +160,13 @@ windows/
 └── 📂 shared/              # Ortak modüller
     ├── __init__.py
     └── protocol.py        # İletişim protokolü
+
+installer/                  # Otomatik kurulum dosyaları
+├── 📄 bootstrap.py         # Akıllı kurulum scripti
+├── 📄 build_exe.py         # Gelişmiş build scripti
+├── 📄 build.bat            # Tek tıkla build
+├── 📄 client_admin.xml     # Windows manifest (yönetici yetkisi)
+└── 📄 README.md            # Installer kullanım rehberi
 ```
 
 ---
@@ -125,11 +178,11 @@ windows/
 **Sorun:** `'python' is not recognized as an internal or external command`
 
 **Çözüm:**
-1. Python'u yeniden yükleyin
-2. Kurulum sırasında **"Add Python to PATH"** seçeneğini işaretleyin
-3. Veya manuel olarak PATH'e ekleyin:
-   - `Win + R` → `sysdm.cpl` → Gelişmiş → Ortam Değişkenleri
-   - Path'e Python yolunu ekleyin (örn: `C:\Python311`)
+- **Seçenek 1:** `ClientInstaller.exe` kullanın (Python otomatik kurulur)
+- **Seçenek 2:** Python'u yeniden yükleyin, **"Add Python to PATH"** işaretleyin
+- **Seçenek 3:** Manuel PATH ekleme:
+  - `Win + R` → `sysdm.cpl` → Gelişmiş → Ortam Değişkenleri
+  - Path'e Python yolunu ekleyin (örn: `C:\Python311`)
 
 ### Bağlantı Başarısız
 
@@ -148,6 +201,23 @@ windows/
 netsh advfirewall firewall add rule name="SiberGuvenlik" dir=in action=allow protocol=tcp localport=5555
 ```
 
+### UAC Penceresi Açılmıyor
+
+**Sorun:** EXE yönetici yetkisi istemiyor
+
+**Çözüm:**
+- EXE'ye sağ tıklayın → "Yönetici olarak çalıştır"
+- veya EXE'yi `--uac-admin` flag'i ile yeniden build edin
+
+### Antivirüs Engelliyor
+
+**Sorun:** EXE virüs olarak algılanıyor
+
+**Çözüm:**
+- Bu bir **yanlış pozitif** (false positive)
+- PyInstaller EXE'leri bazen yanlış algılanır
+- Antivirüste istisna olarak ekleyin
+
 ### EXE Oluşturulamıyor
 
 **Sorun:** PyInstaller hatası
@@ -157,8 +227,12 @@ netsh advfirewall firewall add rule name="SiberGuvenlik" dir=in action=allow pro
 # PyInstaller'ı güncelleyin
 pip install --upgrade pyinstaller
 
-# Manuel olarak EXE oluşturun
-pyinstaller --onefile --windowed --name SiberGuvenlikClient run_client.py
+# Cache temizleyin
+rmdir /s /q build
+rmdir /s /q dist
+
+# Tekrar deneyin
+build_client.bat
 ```
 
 ### Ekran Akışı Çalışmıyor
@@ -187,6 +261,7 @@ pip install pyautogui
 2. **Yetkisiz sistemlerde çalıştırmayın**
 3. **Bağlantı kodunu kimseyle paylaşmayın**
 4. **Kurumsal ağlarda IT onayı alın**
+5. **EXE dosyasını güvenilir kişilerle paylaşın**
 
 ---
 
