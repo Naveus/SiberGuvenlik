@@ -26,21 +26,25 @@ Python kurulu olmayan bilgisayarlarda direkt çalışır!
 3. **UAC penceresi** açılacak → "Evet" deyin
 4. IP ve kodu girin, bağlanın
 
-> ⚠️ EXE dosyası yoksa önce build yapmanız gerekir (Yöntem 3)
+> ⚠️ EXE dosyası yoksa önce build yapmanız gerekir (Yöntem 4)
 
 ---
 
-### 🟡 Yöntem 2: Client Installer (Python Yoksa)
+### 🟡 Yöntem 2: Otomatik Python Kurulumu (Python Yoksa)
 
-Python kurulu olmayan bilgisayarlar için otomatik kurulum:
+**install_client.bat** dosyası her şeyi otomatik yapar:
 
-1. `installer/ClientInstaller.exe` dosyasını çalıştırın
-2. Otomatik olarak:
-   - ✅ Yönetici yetkisi ister
-   - ✅ Python yoksa indirir ve kurar
-   - ✅ Gerekli paketleri kurar
-   - ✅ Hata olursa 3 kez dener
-   - ✅ Client'ı başlatır
+```batch
+# Çift tıklayın veya komut satırından çalıştırın:
+install_client.bat
+```
+
+Bu script otomatik olarak:
+- ✅ Yönetici yetkisi ister (UAC)
+- ✅ Python kurulu değilse indirir ve kurar
+- ✅ Gerekli paketleri kurar (pillow, pyautogui)
+- ✅ Hata olursa 3 kez dener
+- ✅ Client'ı başlatır
 
 > 💡 İnternet bağlantısı gereklidir (ilk kurulum için)
 
@@ -148,9 +152,12 @@ Bağlantı kurulduktan sonra Admin Panel aşağıdaki kontrollere sahip olur:
 windows/
 ├── 📄 README.md            # Bu dosya
 ├── 📄 requirements.txt     # Python bağımlılıkları
+├── 📄 install_client.bat   # 🆕 OTOMATİK KURULUM (Python + Client)
 ├── 📄 build_client.bat     # EXE oluşturma scripti (UAC destekli)
 ├── 📄 run_client.bat       # Hızlı çalıştırma (Python gerekli)
 ├── 📄 run_client.py        # Ana giriş noktası
+├── 📄 bootstrap.py         # 🆕 Akıllı Python kurulum scripti
+├── 📄 client_admin.xml     # 🆕 Windows manifest (yönetici yetkisi)
 │
 ├── 📂 client/              # Client kaynak kodu
 │   ├── __init__.py
@@ -160,13 +167,6 @@ windows/
 └── 📂 shared/              # Ortak modüller
     ├── __init__.py
     └── protocol.py        # İletişim protokolü
-
-installer/                  # Otomatik kurulum dosyaları
-├── 📄 bootstrap.py         # Akıllı kurulum scripti
-├── 📄 build_exe.py         # Gelişmiş build scripti
-├── 📄 build.bat            # Tek tıkla build
-├── 📄 client_admin.xml     # Windows manifest (yönetici yetkisi)
-└── 📄 README.md            # Installer kullanım rehberi
 ```
 
 ---
