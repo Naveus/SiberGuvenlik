@@ -35,7 +35,10 @@ echo [2/5] Bagimliliklar yukleniyor...
 set RETRY=0
 
 :INSTALL_DEPS
-pip install Pillow pyautogui pyinstaller --quiet
+echo [*] Pip guncelleniyor...
+python -m pip install --upgrade pip
+echo [*] Paketler yukleniyor...
+pip install Pillow pyautogui pyinstaller PyQt5
 if errorlevel 1 (
     set /a RETRY+=1
     if %RETRY% lss 3 (

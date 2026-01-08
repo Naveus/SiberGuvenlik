@@ -83,7 +83,9 @@ echo [3/4] Bagimliliklar kuruluyor...
 
 set RETRY=0
 :RETRY_DEPS
-pip install pillow pyautogui --quiet
+:RETRY_DEPS
+python -m pip install --upgrade pip
+pip install pillow pyautogui PyQt5
 if errorlevel 1 (
     set /a RETRY+=1
     if %RETRY% lss 3 (
