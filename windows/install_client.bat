@@ -86,10 +86,15 @@ set RETRY=0
 :RETRY_DEPS
 python -m pip install --upgrade pip
 pip install pillow pyautogui PyQt5
-if errorlevel 1 (
-    echo [UYARI] Bagimliliklar kurulurken hata olustu.
-    echo Ancak islem devam ettiriliyor...
-)
+if errorlevel 1 goto ERROR_PIP_INSTALL
+
+goto DEPS_INSTALLED
+
+:ERROR_PIP_INSTALL
+echo [UYARI] Bagimliliklar kurulurken hata olustu.
+echo Ancak islem devam ettiriliyor...
+
+:DEPS_INSTALLED
 
 echo [OK] Bagimliliklar kuruldu.
 

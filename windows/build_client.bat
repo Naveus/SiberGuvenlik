@@ -40,13 +40,18 @@ echo [*] Pip guncelleniyor...
 python -m pip install --upgrade pip
 echo [*] Paketler yukleniyor...
 pip install Pillow pyautogui pyinstaller PyQt5
-if errorlevel 1 (
-    echo [UYARI] Pip bir hata kodu dondurdu (%errorlevel%).
-    echo Ancak kurulum "Successfully installed" diyorsa devam edebilirsiniz.
-    echo.
-    echo Devam etmek icin bir tusa basin (veya kapatmak icin pencereyi kapatin)...
-    pause
-)
+if errorlevel 1 goto ERROR_PIP_BUILD
+
+goto CONTINUE_BUILD
+
+:ERROR_PIP_BUILD
+echo [UYARI] Pip bir hata kodu dondurdu (%errorlevel%).
+echo Ancak kurulum "Successfully installed" diyorsa devam edebilirsiniz.
+echo.
+echo Devam etmek icin bir tusa basin (veya kapatmak icin pencereyi kapatin)...
+pause
+
+:CONTINUE_BUILD
 
 echo [3/5] Onceki build temizleniyor...
 if exist "build" rmdir /s /q build
