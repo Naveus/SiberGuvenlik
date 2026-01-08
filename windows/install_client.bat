@@ -21,6 +21,7 @@ if errorlevel 1 (
 )
 
 echo [OK] Yonetici yetkisi onaylandi.
+cd /d "%~dp0"
 
 REM Python kontrolu
 python --version >nul 2>&1

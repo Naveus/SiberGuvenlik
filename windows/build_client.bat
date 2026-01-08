@@ -12,6 +12,7 @@ REM ========================================
 echo.
 echo =============================================
 echo   SIBER GUVENLIK CLIENT - Windows Kurulum
+cd /d "%~dp0"
 echo   Yonetici Yetkili EXE Olusturucu
 echo =============================================
 echo.
