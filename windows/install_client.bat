@@ -83,17 +83,11 @@ echo [3/4] Bagimliliklar kuruluyor...
 
 set RETRY=0
 :RETRY_DEPS
-:RETRY_DEPS
 python -m pip install --upgrade pip
 pip install pillow pyautogui PyQt5
 if errorlevel 1 (
-    set /a RETRY+=1
-    if %RETRY% lss 3 (
-        echo [!] Kurulum hatasi, tekrar deneniyor... (%RETRY%/3)
-        timeout /t 2 /nobreak >nul
-        goto RETRY_DEPS
-    )
-    echo [UYARI] Bazi paketler kurulamadi, devam ediliyor...
+    echo [UYARI] Bagimliliklar kurulurken hata olustu.
+    echo Ancak islem devam ettiriliyor...
 )
 
 echo [OK] Bagimliliklar kuruldu.

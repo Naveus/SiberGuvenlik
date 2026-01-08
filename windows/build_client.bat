@@ -40,15 +40,11 @@ python -m pip install --upgrade pip
 echo [*] Paketler yukleniyor...
 pip install Pillow pyautogui pyinstaller PyQt5
 if errorlevel 1 (
-    set /a RETRY+=1
-    if %RETRY% lss 3 (
-        echo [!] Bagimlilik yukleme hatasi, tekrar deneniyor... (%RETRY%/3)
-        timeout /t 2 /nobreak >nul
-        goto INSTALL_DEPS
-    )
-    echo [HATA] Bagimliliklar yuklenemedi!
+    echo [UYARI] Pip bir hata kodu dondurdu (%errorlevel%).
+    echo Ancak kurulum "Successfully installed" diyorsa devam edebilirsiniz.
+    echo.
+    echo Devam etmek icin bir tusa basin (veya kapatmak icin pencereyi kapatin)...
     pause
-    exit /b 1
 )
 
 echo [3/5] Onceki build temizleniyor...
