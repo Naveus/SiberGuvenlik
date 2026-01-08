@@ -12,4 +12,11 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from client.client_gui import main
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print("\n[HATA] Uygulama baslatilirken bir hata olustu!")
+        print(f"Hata detayi: {e}")
+        input("\nCikmak icin Enter'a basin...")
